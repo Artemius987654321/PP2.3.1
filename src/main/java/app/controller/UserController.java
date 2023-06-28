@@ -1,32 +1,24 @@
 package app.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import app.model.User;
 import app.service.UserService;
 
-import java.util.List;
 
 @Controller
-@RequestMapping("/")
+@RequestMapping(value="/", method= RequestMethod.DELETE)
 public class UserController {
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService){
         this.userService = userService;
     }
-
-    @GetMapping(value = "/users")
-    public String getAllUsers(Model model) {
-        try {
-            List<User> getAllUsers = userService.getAllUsers();
-            model.addAttribute("getAllUsers", getAllUsers);
-        } catch (Exception ex) {
-            model.addAttribute("errorMessage", ex.getMessage());
-        }
+    @GetMapping(value = "/")
+    public String printWelcome(ModelMap model) {
+        model.addAttribute("users", userService.getAllUsers());
         return "users";
     }
 
@@ -37,19 +29,15 @@ public class UserController {
 
     @PostMapping("/create")
     public String createUser(@ModelAttribute("user")User user) {
-        userService.updateUser(user);
-        return "redirect:/users";
+        userService.saveUser(user);
+        return "redirect:/";
     }
 
-    @GetMapping("/users/{id}")
+    @GetMapping("/user/{id}")
     public String getUser(Model model, @PathVariable("id") Long id) {
-        try {
-            User user = userService.getUserById(id);
-            model.addAttribute("user", user);
-        } catch (Exception ex) {
-            model.addAttribute("errorMessage", ex.getMessage());
-        }
-        return "get_delete";
+        User user = userService.getUserById(id);
+        model.addAttribute("user", user);
+        return "one_user";
     }
 
     @GetMapping("/delete/{id}")
@@ -57,23 +45,19 @@ public class UserController {
         User user = userService.getUserById(id);
         model.addAttribute("allowDelete", true);
         model.addAttribute("user", user);
-        return "get_delete";
+        return "one_user";
     }
 
     @PostMapping("/delete/{id}")
-    public String deleteUser(@PathVariable("id") Long id) {
+    public String deleteUser(@PathVariable("id") int id) {
         userService.removeUserById(id);
-        return "redirect:/users";
+        return "redirect:/";
     }
 
     @GetMapping("/edit/{id}")
     public String editUserForm(Model model, @PathVariable("id") Long id) {
-        try {
-            User user = userService.getUserById(id);
-            model.addAttribute("user", user);
-        } catch (Exception ex) {
-            model.addAttribute("errorMessage", ex.getMessage());
-        }
+        User user = userService.getUserById(id);
+        model.addAttribute("user", user);
         return "edit";
     }
 
@@ -81,6 +65,6 @@ public class UserController {
     public String editUser(@ModelAttribute("user") User user, @PathVariable("id") Long id) {
         user.setId(id);
         userService.updateUser(user);
-        return "redirect:/users";
+        return "redirect:/";
     }
 }
