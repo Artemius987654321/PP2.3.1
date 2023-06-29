@@ -9,15 +9,16 @@ import app.service.UserService;
 
 
 @Controller
-@RequestMapping(value="/", method= RequestMethod.DELETE)
+@RequestMapping(value="/")
 public class UserController {
     private final UserService userService;
 
     public UserController(UserService userService){
         this.userService = userService;
     }
+
     @GetMapping(value = "/")
-    public String printWelcome(ModelMap model) {
+    public String getAllUsers(ModelMap model) {
         model.addAttribute("users", userService.getAllUsers());
         return "users";
     }

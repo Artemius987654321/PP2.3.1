@@ -6,12 +6,17 @@ import org.springframework.transaction.annotation.Transactional;
 import app.dao.UserDao;
 import app.model.User;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 
 @Transactional
 @Service
 public class UserServiceImpl implements UserService {
+    @PersistenceContext
+    private EntityManager entityManager;
     private UserDao userDao;
+
 
     @Autowired
     public UserServiceImpl(UserDao userDao) {
@@ -30,7 +35,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void removeUserById(long id) {
-        userDao.removeUserById(id);
+        entityManager.remove(getUserById(id));
     }
 
     @Override

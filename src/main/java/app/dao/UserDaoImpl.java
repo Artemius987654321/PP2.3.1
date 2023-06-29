@@ -9,9 +9,9 @@ import java.util.List;
 
 @Repository
 public class UserDaoImpl implements UserDao {
-
     @PersistenceContext
     private EntityManager entityManager;
+
     @Override
     public User getUserById(long id) {
         return entityManager.find(User.class, id);
